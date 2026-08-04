@@ -3,7 +3,7 @@ module github.com/aliyun/idaas-go-akless-tencent-adapter
 go 1.18
 
 require (
-	github.com/aliyun/idaas-go-core-sdk v0.0.6
+	github.com/cloud-idaas/idaas-go-core-sdk v0.1.0-alpha.3
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls v1.3.144
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.144
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.75
@@ -17,5 +17,3 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/mozillazg/go-httpheader v0.2.1 // indirect
 )
-
-replace github.com/aliyun/idaas-go-core-sdk => ../idaas-go-core-sdk

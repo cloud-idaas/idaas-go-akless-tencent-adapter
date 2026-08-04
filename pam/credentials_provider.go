@@ -8,13 +8,13 @@ import (
 
 	adapterconstants "github.com/aliyun/idaas-go-akless-tencent-adapter/constants"
 	"github.com/aliyun/idaas-go-akless-tencent-adapter/domain"
-	"github.com/aliyun/idaas-go-core-sdk/cache"
-	sdkconstants "github.com/aliyun/idaas-go-core-sdk/constants"
-	sdkdomain "github.com/aliyun/idaas-go-core-sdk/domain"
-	"github.com/aliyun/idaas-go-core-sdk/enums"
-	sdkerrors "github.com/aliyun/idaas-go-core-sdk/errors"
-	sdkhttp "github.com/aliyun/idaas-go-core-sdk/http"
-	"github.com/aliyun/idaas-go-core-sdk/provider"
+	"github.com/cloud-idaas/idaas-go-core-sdk/cache"
+	sdkconstants "github.com/cloud-idaas/idaas-go-core-sdk/constants"
+	sdkdomain "github.com/cloud-idaas/idaas-go-core-sdk/domain"
+	"github.com/cloud-idaas/idaas-go-core-sdk/enums"
+	sdkerrors "github.com/cloud-idaas/idaas-go-core-sdk/errors"
+	sdkhttp "github.com/cloud-idaas/idaas-go-core-sdk/http"
+	"github.com/cloud-idaas/idaas-go-core-sdk/provider"
 )
 
 const (

@@ -20,7 +20,7 @@ IDaaS（身份即服务）AKless 适配器 Go SDK —— 通过 IDaaS PAM（特�
 
 - Go >= 1.18
 - 依赖：
-  - idaas-go-core-sdk >= 0.0.6
+  - idaas-go-core-sdk >= 0.1.0-alpha.3
 
 ## 安装
 
@@ -30,9 +30,9 @@ go get github.com/aliyun/idaas-go-akless-tencent-adapter
 
 ## 前置条件
 
-本 SDK 依赖 [idaas-go-core-sdk](https://github.com/aliyun/idaas-go-core-sdk)。使用本适配器前，需要完成 IDaaS Core SDK 的初始化。
+本 SDK 依赖 [idaas-go-core-sdk](https://github.com/cloud-idaas/idaas-go-core-sdk)。使用本适配器前，需要完成 IDaaS Core SDK 的初始化。
 
-1. 添加 `idaas-go-core-sdk` 依赖并完成配置。详见 [idaas-go-core-sdk README](https://github.com/aliyun/idaas-go-core-sdk/blob/main/README.md)。
+1. 添加 `idaas-go-core-sdk` 依赖并完成配置。详见 [idaas-go-core-sdk README](https://github.com/cloud-idaas/idaas-go-core-sdk/blob/main/README.md)。
 
 2. 在配置文件中，将 `scope` 设置为 IDaaS PAM 内置 scope：
 
@@ -46,8 +46,8 @@ go get github.com/aliyun/idaas-go-akless-tencent-adapter
 
    ```go
    import (
-       "github.com/aliyun/idaas-go-core-sdk/config"
-       "github.com/aliyun/idaas-go-core-sdk/factory"
+       "github.com/cloud-idaas/idaas-go-core-sdk/config"
+       "github.com/cloud-idaas/idaas-go-core-sdk/factory"
    )
 
    func main() {
@@ -76,8 +76,8 @@ import (
 	"log"
 
 	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-	"github.com/aliyun/idaas-go-core-sdk/config"
-	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/cloud-idaas/idaas-go-core-sdk/config"
+	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 )
 
 func main() {
@@ -126,8 +126,8 @@ import (
 	"log"
 
 	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-	"github.com/aliyun/idaas-go-core-sdk/config"
-	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/cloud-idaas/idaas-go-core-sdk/config"
+	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	cls "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls/v20201016"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
@@ -196,8 +196,8 @@ import (
 	"net/url"
 
 	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-	"github.com/aliyun/idaas-go-core-sdk/config"
-	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/cloud-idaas/idaas-go-core-sdk/config"
+	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	"github.com/tencentyun/cos-go-sdk-v5"
 )
 

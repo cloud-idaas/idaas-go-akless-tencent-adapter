@@ -1,5 +1,7 @@
 github.com/clbanning/mxj v1.8.4 h1:HuhwZtbyvyOw+3Z1AowPkU87JkJUSv751ELWaiTpj8I=
 github.com/clbanning/mxj v1.8.4/go.mod h1:BVjHeAH+rl9rs6f+QIpeRl0tfu10SXn1pUSa5PVGJng=
+github.com/cloud-idaas/idaas-go-core-sdk v0.1.0-alpha.3 h1:WEYnci9i12+IOEIitz+eu9FWNLExlVIjZVx13eERi0s=
+github.com/cloud-idaas/idaas-go-core-sdk v0.1.0-alpha.3/go.mod h1:zRjOWqOAcloup46Lu/G3znCDpruY3Y28Js/8y2EGF6M=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang-jwt/jwt/v4 v4.5.2 h1:YtQM7lnr8iZ+j5q71MGKkNw9Mn7AjHM68uc9g5fXeUI=
 github.com/golang-jwt/jwt/v4 v4.5.2/go.mod h1:m21LjoU+eqJr34lmDMbreY2eSTRJ1cv77w39/MY0Ch0=

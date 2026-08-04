@@ -8,8 +8,8 @@ import (
 	"net/url"
 
 	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-	"github.com/aliyun/idaas-go-core-sdk/config"
-	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/cloud-idaas/idaas-go-core-sdk/config"
+	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	"github.com/tencentyun/cos-go-sdk-v5"
 )
 

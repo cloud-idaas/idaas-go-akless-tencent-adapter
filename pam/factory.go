@@ -1,8 +1,8 @@
 package pam
 
 import (
-	"github.com/aliyun/idaas-go-core-sdk/factory"
-	"github.com/aliyun/idaas-go-core-sdk/provider"
+	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
+	"github.com/cloud-idaas/idaas-go-core-sdk/provider"
 )
 
 type oidcTokenAdapter struct {

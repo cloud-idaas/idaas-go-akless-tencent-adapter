@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-	"github.com/aliyun/idaas-go-core-sdk/config"
-	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/cloud-idaas/idaas-go-core-sdk/config"
+	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	cls "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls/v20201016"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
