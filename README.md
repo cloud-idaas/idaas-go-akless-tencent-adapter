@@ -51,8 +51,16 @@ This SDK depends on [idaas-go-core-sdk](https://github.com/aliyun/idaas-go-core-
    )
 
    func main() {
-       cfg, _ := config.LoadConfig("")
-       factory.GetInstance().Initialize(cfg)
+       reader := config.NewConfigReader()
+       cfg, err := reader.LoadWithPriority("")
+       if err != nil {
+           panic(err)
+       }
+       factoryInstance := factory.GetInstance()
+       err = factoryInstance.Initialize(cfg)
+       if err != nil {
+           panic(err)
+       }
    }
    ```
 
@@ -64,129 +72,178 @@ The simplest way to use this SDK is through the factory functions:
 package main
 
 import (
-    "fmt"
-    "log"
+	"fmt"
+	"log"
 
-    "github.com/aliyun/idaas-go-core-sdk/config"
-    "github.com/aliyun/idaas-go-core-sdk/factory"
-    "github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-core-sdk/config"
+	"github.com/aliyun/idaas-go-core-sdk/factory"
 )
 
 func main() {
-    // 1. Initialize IDaaS Core SDK
-    cfg, err := config.LoadConfig("")
-    if err != nil {
-        log.Fatal(err)
-    }
-    if err := factory.GetInstance().Initialize(cfg); err != nil {
-        log.Fatal(err)
-    }
+	// 1. Initialize IDaaS Core SDK
+	reader := config.NewConfigReader()
+	cfg, err := reader.LoadWithPriority("")
+	if err != nil {
+		panic(err)
+	}
+	factoryInstance := factory.GetInstance()
+	err = factoryInstance.Initialize(cfg)
+	if err != nil {
+		panic(err)
+	}
 
-    // 2. Create Tencent Cloud credentials provider
-    provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 2. Create TencentCloud credentials provider via factory
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
+	if err != nil {
+		log.Fatal(err)
+	}
+	cred, err := provider.GetCredentials()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // 3. Get credentials
-    credential, err := provider.GetCredentials()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    fmt.Println(credential.SecretId)
-    fmt.Println(credential.SecretKey)
-    fmt.Println(credential.Token)
+	// 3. Use the TencentCloud temporary credential
+	fmt.Println(cred.SecretId)
+	fmt.Println(cred.SecretKey)
+	fmt.Println(cred.Token)
 }
 ```
 
 ## Usage Examples
 
+The following examples are the complete runnable code under [`samples/`](samples).
+
 ### Tencent Cloud SDK (tencentcloud-sdk-go)
+
+List CLS log topics, see [samples/list-cls-topics](samples/list-cls-topics):
 
 ```go
 package main
 
 import (
-    "log"
+	"fmt"
+	"log"
 
-    "github.com/aliyun/idaas-go-core-sdk/config"
-    "github.com/aliyun/idaas-go-core-sdk/factory"
-    "github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-    "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
-    "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-    cvm "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cvm/v20170312"
+	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-core-sdk/config"
+	"github.com/aliyun/idaas-go-core-sdk/factory"
+	cls "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls/v20201016"
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 )
 
 func main() {
-    // Initialize
-    cfg, _ := config.LoadConfig("")
-    factory.GetInstance().Initialize(cfg)
+	// 1. Initialize IDaaS Core SDK
+	reader := config.NewConfigReader()
+	cfg, err := reader.LoadWithPriority("")
+	if err != nil {
+		panic(err)
+	}
+	factoryInstance := factory.GetInstance()
+	err = factoryInstance.Initialize(cfg)
+	if err != nil {
+		panic(err)
+	}
 
-    // Create Tencent Cloud credentials provider
-    provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 2. Create TencentCloud credentials provider via factory
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
+	if err != nil {
+		log.Fatal(err)
+	}
+	cred, err := provider.GetCredentials()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // Get credentials and use with Tencent Cloud SDK
-    cred, err := provider.GetCredentials()
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 3. Use TencentCloud credential to create TencentCloud client
+	region := "ap-guangzhou"
+	credential := common.NewTokenCredential(cred.SecretId, cred.SecretKey, cred.Token)
+	httpProfile := profile.NewHttpProfile()
+	httpProfile.Endpoint = "cls.tencentcloudapi.com"
+	clientProfile := profile.NewClientProfile()
+	clientProfile.HttpProfile = httpProfile
+	client, err := cls.NewClient(credential, region, clientProfile)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    credential := common.NewTokenCredential(cred.SecretId, cred.SecretKey, cred.Token)
-    cpf := profile.NewClientProfile()
-    client, _ := cvm.NewClient(credential, "ap-guangzhou", cpf)
-    _ = client
+	// 4. Use TencentCloud client to call TencentCloud API
+	request := cls.NewDescribeTopicsRequest()
+	response, err := client.DescribeTopics(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, topic := range response.Response.Topics {
+		fmt.Printf("TopicId: %s | TopicName: %s | LogsetId: %s\n",
+			*topic.TopicId, *topic.TopicName, *topic.LogsetId)
+	}
 }
 ```
 
 ### COS (cos-go-sdk-v5)
 
+List COS buckets, see [samples/list-cos-buckets](samples/list-cos-buckets):
+
 ```go
 package main
 
 import (
-    "context"
-    "log"
-    "net/http"
-    "net/url"
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"net/url"
 
-    "github.com/aliyun/idaas-go-core-sdk/config"
-    "github.com/aliyun/idaas-go-core-sdk/factory"
-    "github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-    "github.com/tencentyun/cos-go-sdk-v5"
+	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-core-sdk/config"
+	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
 func main() {
-    // Initialize
-    cfg, _ := config.LoadConfig("")
-    factory.GetInstance().Initialize(cfg)
+	// 1. Initialize IDaaS Core SDK
+	reader := config.NewConfigReader()
+	cfg, err := reader.LoadWithPriority("")
+	if err != nil {
+		panic(err)
+	}
+	factoryInstance := factory.GetInstance()
+	err = factoryInstance.Initialize(cfg)
+	if err != nil {
+		panic(err)
+	}
 
-    // Create COS credentials provider
-    cosProvider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 2. Create TencentCloud credentials provider via factory
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
+	if err != nil {
+		log.Fatal(err)
+	}
+	cred, err := provider.GetCredentials()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // Get credentials and use with COS SDK
-    cred, _ := cosProvider.GetCredentials()
+	// 3. Use TencentCloud credential to create TencentCloud client
+	u, _ := url.Parse(fmt.Sprintf("https://cos.%s.myqcloud.com", "ap-guangzhou"))
+	b := &cos.BaseURL{BucketURL: u}
+	client := cos.NewClient(b, &http.Client{
+		Transport: &cos.AuthorizationTransport{
+			SecretID:     cred.SecretId,
+			SecretKey:    cred.SecretKey,
+			SessionToken: cred.Token,
+		},
+	})
 
-    u, _ := url.Parse("https://your-bucket.cos.ap-guangzhou.myqcloud.com")
-    b := &cos.BaseURL{BucketURL: u}
-    client := cos.NewClient(b, &http.Client{
-        Transport: &cos.AuthorizationTransport{
-            SecretID:     cred.SecretId,
-            SecretKey:    cred.SecretKey,
-            SessionToken: cred.Token,
-        },
-    })
-    _ = client
-
-    // List objects
-    result, _, _ := client.Bucket.Get(context.Background(), nil)
-    _ = result
+	// 4. Use TencentCloud client to call TencentCloud API
+	result, _, err := client.Service.Get(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, bucket := range result.Buckets {
+		fmt.Printf("Bucket: %s | Region: %s | CreateDate: %s\n",
+			bucket.Name, bucket.Region, bucket.CreationDate)
+	}
 }
 ```
 

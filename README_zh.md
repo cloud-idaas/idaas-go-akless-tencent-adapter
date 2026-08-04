@@ -51,8 +51,16 @@ go get github.com/aliyun/idaas-go-akless-tencent-adapter
    )
 
    func main() {
-       cfg, _ := config.LoadConfig("")
-       factory.GetInstance().Initialize(cfg)
+       reader := config.NewConfigReader()
+       cfg, err := reader.LoadWithPriority("")
+       if err != nil {
+           panic(err)
+       }
+       factoryInstance := factory.GetInstance()
+       err = factoryInstance.Initialize(cfg)
+       if err != nil {
+           panic(err)
+       }
    }
    ```
 
@@ -64,128 +72,178 @@ go get github.com/aliyun/idaas-go-akless-tencent-adapter
 package main
 
 import (
-    "fmt"
-    "log"
+	"fmt"
+	"log"
 
-    "github.com/aliyun/idaas-go-core-sdk/config"
-    "github.com/aliyun/idaas-go-core-sdk/factory"
-    "github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-core-sdk/config"
+	"github.com/aliyun/idaas-go-core-sdk/factory"
 )
 
 func main() {
-    // 1. 初始化 IDaaS Core SDK
-    cfg, err := config.LoadConfig("")
-    if err != nil {
-        log.Fatal(err)
-    }
-    if err := factory.GetInstance().Initialize(cfg); err != nil {
-        log.Fatal(err)
-    }
+	// 1. 初始化 IDaaS Core SDK
+	reader := config.NewConfigReader()
+	cfg, err := reader.LoadWithPriority("")
+	if err != nil {
+		panic(err)
+	}
+	factoryInstance := factory.GetInstance()
+	err = factoryInstance.Initialize(cfg)
+	if err != nil {
+		panic(err)
+	}
 
-    // 2. 创建腾讯云凭证提供者
-    provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 2. 通过工厂创建腾讯云凭证提供者
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
+	if err != nil {
+		log.Fatal(err)
+	}
+	cred, err := provider.GetCredentials()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // 3. 获取凭证
-    credential, err := provider.GetCredentials()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    fmt.Println(credential.SecretId)
-    fmt.Println(credential.SecretKey)
-    fmt.Println(credential.Token)
+	// 3. 使用腾讯云临时凭证
+	fmt.Println(cred.SecretId)
+	fmt.Println(cred.SecretKey)
+	fmt.Println(cred.Token)
 }
 ```
 
 ## 使用示例
 
+以下示例即 [`samples/`](samples) 目录下的完整可运行代码。
+
 ### 腾讯云 SDK (tencentcloud-sdk-go)
+
+列举 CLS 日志主题，见 [samples/list-cls-topics](samples/list-cls-topics)：
 
 ```go
 package main
 
 import (
-    "log"
+	"fmt"
+	"log"
 
-    "github.com/aliyun/idaas-go-core-sdk/config"
-    "github.com/aliyun/idaas-go-core-sdk/factory"
-    "github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-    "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
-    "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-    cvm "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cvm/v20170312"
+	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-core-sdk/config"
+	"github.com/aliyun/idaas-go-core-sdk/factory"
+	cls "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls/v20201016"
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
+	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 )
 
 func main() {
-    // 初始化
-    cfg, _ := config.LoadConfig("")
-    factory.GetInstance().Initialize(cfg)
+	// 1. 初始化 IDaaS Core SDK
+	reader := config.NewConfigReader()
+	cfg, err := reader.LoadWithPriority("")
+	if err != nil {
+		panic(err)
+	}
+	factoryInstance := factory.GetInstance()
+	err = factoryInstance.Initialize(cfg)
+	if err != nil {
+		panic(err)
+	}
 
-    // 创建腾讯云凭证提供者
-    provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 2. 通过工厂创建腾讯云凭证提供者
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
+	if err != nil {
+		log.Fatal(err)
+	}
+	cred, err := provider.GetCredentials()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // 获取凭证并用于腾讯云 SDK
-    cred, err := provider.GetCredentials()
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 3. 使用腾讯云凭证创建腾讯云客户端
+	region := "ap-guangzhou"
+	credential := common.NewTokenCredential(cred.SecretId, cred.SecretKey, cred.Token)
+	httpProfile := profile.NewHttpProfile()
+	httpProfile.Endpoint = "cls.tencentcloudapi.com"
+	clientProfile := profile.NewClientProfile()
+	clientProfile.HttpProfile = httpProfile
+	client, err := cls.NewClient(credential, region, clientProfile)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    credential := common.NewTokenCredential(cred.SecretId, cred.SecretKey, cred.Token)
-    cpf := profile.NewClientProfile()
-    client, _ := cvm.NewClient(credential, "ap-guangzhou", cpf)
-    _ = client
+	// 4. 使用腾讯云客户端调用腾讯云 API
+	request := cls.NewDescribeTopicsRequest()
+	response, err := client.DescribeTopics(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, topic := range response.Response.Topics {
+		fmt.Printf("TopicId: %s | TopicName: %s | LogsetId: %s\n",
+			*topic.TopicId, *topic.TopicName, *topic.LogsetId)
+	}
 }
 ```
 
 ### COS (cos-go-sdk-v5)
 
+列举 COS 存储桶，见 [samples/list-cos-buckets](samples/list-cos-buckets)：
+
 ```go
 package main
 
 import (
-    "context"
-    "log"
-    "net/http"
-    "net/url"
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"net/url"
 
-    "github.com/aliyun/idaas-go-core-sdk/config"
-    "github.com/aliyun/idaas-go-core-sdk/factory"
-    "github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
-    "github.com/tencentyun/cos-go-sdk-v5"
+	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/aliyun/idaas-go-core-sdk/config"
+	"github.com/aliyun/idaas-go-core-sdk/factory"
+	"github.com/tencentyun/cos-go-sdk-v5"
 )
 
 func main() {
-    // 初始化
-    cfg, _ := config.LoadConfig("")
-    factory.GetInstance().Initialize(cfg)
+	// 1. 初始化 IDaaS Core SDK
+	reader := config.NewConfigReader()
+	cfg, err := reader.LoadWithPriority("")
+	if err != nil {
+		panic(err)
+	}
+	factoryInstance := factory.GetInstance()
+	err = factoryInstance.Initialize(cfg)
+	if err != nil {
+		panic(err)
+	}
 
-    // 创建凭证提供者
-    provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
-    if err != nil {
-        log.Fatal(err)
-    }
+	// 2. 通过工厂创建腾讯云凭证提供者
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
+	if err != nil {
+		log.Fatal(err)
+	}
+	cred, err := provider.GetCredentials()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // 获取凭证并用于 COS SDK
-    cred, _ := provider.GetCredentials()
+	// 3. 使用腾讯云凭证创建腾讯云客户端
+	u, _ := url.Parse(fmt.Sprintf("https://cos.%s.myqcloud.com", "ap-guangzhou"))
+	b := &cos.BaseURL{BucketURL: u}
+	client := cos.NewClient(b, &http.Client{
+		Transport: &cos.AuthorizationTransport{
+			SecretID:     cred.SecretId,
+			SecretKey:    cred.SecretKey,
+			SessionToken: cred.Token,
+		},
+	})
 
-    u, _ := url.Parse("https://your-bucket.cos.ap-guangzhou.myqcloud.com")
-    b := &cos.BaseURL{BucketURL: u}
-    client := cos.NewClient(b, &http.Client{
-        Transport: &cos.AuthorizationTransport{
-            SecretID:     cred.SecretId,
-            SecretKey:    cred.SecretKey,
-            SessionToken: cred.Token,
-        },
-    })
-
-    // 列出对象
-    result, _, _ := client.Bucket.Get(context.Background(), nil)
-    _ = result
+	// 4. 使用腾讯云客户端调用腾讯云 API
+	result, _, err := client.Service.Get(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, bucket := range result.Buckets {
+		fmt.Printf("Bucket: %s | Region: %s | CreateDate: %s\n",
+			bucket.Name, bucket.Region, bucket.CreationDate)
+	}
 }
 ```
 

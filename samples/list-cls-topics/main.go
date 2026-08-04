@@ -26,7 +26,7 @@ func main() {
 	}
 
 	// 2. Create TencentCloud credentials provider via factory
-	provider, err := pam.GetTencentCloudCredentialsProvider("qcs::cam::uin/100049046297:roleName/user_role")
+	provider, err := pam.GetTencentCloudCredentialsProvider("your-role-arn")
 	if err != nil {
 		log.Fatal(err)
 	}
