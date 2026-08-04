@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/cloud-idaas/idaas-go-akless-tencent-adapter/pam"
 	"github.com/cloud-idaas/idaas-go-core-sdk/config"
 	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	"github.com/tencentyun/cos-go-sdk-v5"

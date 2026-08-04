@@ -33,4 +33,3 @@ func GetTencentCloudCredentialsProvider(roleArn string) (*IDaaSPamTencentCloudCr
 		WithRoleArn(roleArn),
 	)
 }
-

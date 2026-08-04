@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	adapterconstants "github.com/aliyun/idaas-go-akless-tencent-adapter/constants"
-	"github.com/aliyun/idaas-go-akless-tencent-adapter/domain"
+	adapterconstants "github.com/cloud-idaas/idaas-go-akless-tencent-adapter/constants"
+	"github.com/cloud-idaas/idaas-go-akless-tencent-adapter/domain"
 	"github.com/cloud-idaas/idaas-go-core-sdk/cache"
 	sdkconstants "github.com/cloud-idaas/idaas-go-core-sdk/constants"
 	sdkdomain "github.com/cloud-idaas/idaas-go-core-sdk/domain"

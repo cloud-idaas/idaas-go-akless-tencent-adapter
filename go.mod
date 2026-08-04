@@ -1,4 +1,4 @@
-module github.com/aliyun/idaas-go-akless-tencent-adapter
+module github.com/cloud-idaas/idaas-go-akless-tencent-adapter
 
 go 1.18
 

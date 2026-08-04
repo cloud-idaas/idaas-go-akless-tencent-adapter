@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/cloud-idaas/idaas-go-akless-tencent-adapter/pam"
 	"github.com/cloud-idaas/idaas-go-core-sdk/config"
 	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	cls "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls/v20201016"

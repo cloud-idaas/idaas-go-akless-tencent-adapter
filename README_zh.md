@@ -2,8 +2,8 @@
 
 [![Go Version](https://img.shields.io/badge/go-1.18%2B-blue)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Development Status](https://img.shields.io/badge/status-Beta-orange)](https://github.com/aliyun/idaas-go-akless-tencent-adapter)
-[![Version](https://img.shields.io/badge/version-0.0.1--beta-blue)](https://github.com/aliyun/idaas-go-akless-tencent-adapter)
+[![Development Status](https://img.shields.io/badge/status-Beta-orange)](https://github.com/cloud-idaas/idaas-go-akless-tencent-adapter)
+[![Version](https://img.shields.io/badge/version-0.1.0--beta.1-blue)](https://github.com/cloud-idaas/idaas-go-akless-tencent-adapter)
 
 [English](README.md) | 简体中文
 
@@ -25,7 +25,7 @@ IDaaS（身份即服务）AKless 适配器 Go SDK —— 通过 IDaaS PAM（特�
 ## 安装
 
 ```bash
-go get github.com/aliyun/idaas-go-akless-tencent-adapter
+go get github.com/cloud-idaas/idaas-go-akless-tencent-adapter
 ```
 
 ## 前置条件
@@ -75,7 +75,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/cloud-idaas/idaas-go-akless-tencent-adapter/pam"
 	"github.com/cloud-idaas/idaas-go-core-sdk/config"
 	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 )
@@ -125,7 +125,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/cloud-idaas/idaas-go-akless-tencent-adapter/pam"
 	"github.com/cloud-idaas/idaas-go-core-sdk/config"
 	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	cls "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls/v20201016"
@@ -195,7 +195,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/aliyun/idaas-go-akless-tencent-adapter/pam"
+	"github.com/cloud-idaas/idaas-go-akless-tencent-adapter/pam"
 	"github.com/cloud-idaas/idaas-go-core-sdk/config"
 	"github.com/cloud-idaas/idaas-go-core-sdk/factory"
 	"github.com/tencentyun/cos-go-sdk-v5"
@@ -288,7 +288,7 @@ provider, err := pam.NewIDaaSPamTencentCloudCredentialsProvider(
 ## 支持与反馈
 
 - **邮箱**: cloudidaas@list.alibaba-inc.com
-- **Issues**: 如有疑问或建议，请提交 [Issue](https://github.com/aliyun/idaas-go-akless-tencent-adapter/issues)
+- **Issues**: 如有疑问或建议，请提交 [Issue](https://github.com/cloud-idaas/idaas-go-akless-tencent-adapter/issues)
 
 ## 许可证
 
