@@ -1,0 +1,17 @@
+{
+  "idaasInstanceId": "your-idaas-instance-id",
+  "clientId": "your-client-id",
+  "issuer": "https://your-idaas-instance.aliyunidaas.com/api/v2/<authorizationServerId>/oauth2",
+  "tokenEndpoint": "https://your-idaas-instance.aliyunidaas.com/api/v2/<authorizationServerId>/oauth2/token",
+  "scope": "urn:cloud:idaas:pam|cloud_account_role:obtain_access_credential urn:cloud:idaas:pam|credential:obtain",
+  "developerApiEndpoint": "eiam-developerapi.<region>.aliyuncs.com",
+  "authnConfiguration": {
+    "identityType": "CLIENT",
+    "authnMethod": "CLIENT_SECRET_POST",
+    "clientSecretEnvVarName": "IDAAS_CLIENT_SECRET"
+  },
+  "httpConfiguration": {
+    "connectTimeout": 5000,
+    "readTimeout": 10000
+  }
+}

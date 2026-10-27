@@ -3,7 +3,7 @@ module github.com/cloud-idaas/idaas-go-akless-tencent-adapter
 go 1.18
 
 require (
-	github.com/cloud-idaas/idaas-go-core-sdk v0.1.0-alpha.3
+	github.com/cloud-idaas/idaas-go-core-sdk v0.1.0-beta.1
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cls v1.3.144
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.144
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.75

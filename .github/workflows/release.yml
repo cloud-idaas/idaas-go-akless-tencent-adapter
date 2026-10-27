@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"   # e.g. v0.1.0-beta.1 — pushed only after CI is green (see _oss_publish/tag_release.sh)
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Verify & Publish Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+          cache: true
+
+      - name: Verify build & tests
+        run: |
+          go build ./...
+          go test ./... -race
+
+      - name: Verify the module resolves at this tag
+        # A Go module tag is only useful if the proxy can serve it; this catches a tag pushed
+        # from a branch that is not on the default branch, or a tag with the wrong major suffix.
+        run: go list -m github.com/cloud-idaas/idaas-go-akless-tencent-adapter@${GITHUB_REF_NAME}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

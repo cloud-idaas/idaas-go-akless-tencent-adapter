@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          # go.mod declares `go 1.18` (the consumer-facing floor; see CONTRIBUTING "Coding
+          # standards"). CI builds/tests on a current toolchain so the floor is never tested
+          # *upwards* by accident — a dependency's own `go` directive is only a claim and,
+          # before Go 1.21, does not constrain the resolved graph. Vulnerability scanning is a
+          # separate job on the latest stable toolchain (govulncheck@latest needs Go >= 1.21).
+          go-version: "1.25"
+          cache: true
+
+      - name: Go fmt check
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::Files need formatting:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Go vet
+        run: go vet ./...
+
+      - name: Go vet (integration suite keeps compiling)
+        # The integration suite is behind `-tags=integration` and is never executed in CI (it
+        # needs a real IDaaS instance, a real client secret and a real Tencent Cloud role).
+        # Vetting it here stops it from rotting into a file that no longer compiles.
+        run: go vet -tags=integration ./...
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test with coverage
+        run: |
+          # Coverage is measured over the library packages only. samples/ are standalone
+          # `package main` programs with no tests; counting them would dilute the number
+          # (~54%) without telling us anything about the shipped code.
+          go test ./domain/... ./pam/... ./constants/... \
+            -race -covermode=atomic \
+            -coverprofile=coverage.out \
+            -coverpkg=./domain/...,./pam/...,./constants/...
+          go tool cover -func=coverage.out | tail -1
+          # awk takes the last column (`94.4%`), tr strips the `%`. A `[0-9.]+$` regex against
+          # the raw line never matches because the line ends in `%` — that bug made this gate a
+          # no-op in an earlier revision.
+          cov=$(go tool cover -func=coverage.out | tail -1 | awk '{print $NF}' | tr -d '%')
+          echo "Total coverage (library packages): ${cov}%"
+          if [ "$(awk -v c="$cov" 'BEGIN{print (c+0 < 80) ? 1 : 0}')" = "1" ]; then
+            echo "::error::Coverage ${cov}% is below the 80% threshold"
+            exit 1
+          fi
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+
+  vuln-scan:
+    name: Vulnerability scan
+    # Split from the build/test job: stdlib advisories are only fixed in the newest supported
+    # toolchain, so pinning this job to a version would make it go red as advisories roll. The
+    # declared floor is verified by the test job; here we scan with the latest stable toolchain
+    # and govulncheck@latest so the verdict stays in sync with the advisory database.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+          cache: false
+
+      - name: govulncheck
+        run: |
+          go version
+          go env GOPROXY GOTOOLCHAIN
+          go run golang.org/x/vuln/cmd/govulncheck@latest ./...

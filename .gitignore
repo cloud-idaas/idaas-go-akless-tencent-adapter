@@ -1,12 +1,63 @@
-# IDE
-.idea/
-.vscode/
-
-# Build artifacts
+# ---- Go ----
+/bin/
+/dist/
 *.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 *.test
 *.out
 bin/
 
-# OS
+# Go workspace
+go.work
+go.work.sum
+
+# 覆盖率 / 性能分析
+*.cover
+*.coverprofile
+coverage.out
+coverage.txt
+coverage.html
+*.prof
+
+# 依赖本地缓存（不入库）
+vendor/
+
+# ---- IDE / 编辑器 ----
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# ---- 操作系统 ----
 .DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# ---- 本地真实配置（严禁入库；仅锚定仓库根，samples/ 下的占位模板可提交）----
+/cloud_idaas.json
+/cloud_idaas-*.json
+*.local.json
+*-local.json
+client-config.json
+idaas-config.json
+idaas-config*.json
+akless-config.json
+.cloud_idaas/
+
+# ---- 环境变量 / 密钥文件 ----
+.env
+.env.*
+!.env.example
+credentials.env
+
+# ---- 临时文件 / 日志 ----
+*.log
+tmp/
+temp/
